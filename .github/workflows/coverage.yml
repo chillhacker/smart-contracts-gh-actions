@@ -1,0 +1,75 @@
+name: Run Coverage
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch: {}
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Install Dependencies
+        run: npm install
+
+  run-coverage:
+    needs: prepare
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run Coverage
+        run: npx hardhat coverage
+
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: coverage/*
+
+      - name: Output Coverage Summary
+        id: coverage_summary
+        run: |
+          echo "Coverage summary:"
+          cat coverage/coverage.txt || echo "No summary available"
+
+      - name: Comment Coverage Results
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const coveragePath = './coverage/coverage.txt';
+            let coverageSummary = 'Coverage report not available.';
+            if (fs.existsSync(coveragePath)) {
+              coverageSummary = fs.readFileSync(coveragePath, 'utf8');
+            }
+            const issueNumber = context.payload.pull_request ? context.payload.pull_request.number : context.issue.number;
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              body: `### Coverage Report\n\`\`\`\n${coverageSummary}\n\`\`\``
+            });
