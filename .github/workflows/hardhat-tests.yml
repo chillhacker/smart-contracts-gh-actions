@@ -1,0 +1,40 @@
+name: Run Hardhat Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    name: Run Hardhat Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout repository
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # Step 2: Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      # Step 3: Install Dependencies
+      - name: Install Dependencies
+        run: npm install
+
+      # Step 4: Set up Hardhat Network Fork (Optional)
+      - name: Set Up Hardhat Fork
+        env:
+          ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
+        run: |
+          echo "FORK_URL=https://eth-mainnet.alchemyapi.io/v2/${{ secrets.ALCHEMY_API_KEY }}" >> .env
+
+      # Step 5: Run Hardhat Tests
+      - name: Run Hardhat Tests
+        run: npx hardhat test
