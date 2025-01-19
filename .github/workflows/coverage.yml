@@ -41,6 +41,9 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
+      - name: Install lcov-summary
+        run: npm install -g lcov-summary
+
       - name: Run Coverage
         run: npx hardhat coverage
 
