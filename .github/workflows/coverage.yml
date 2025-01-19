@@ -48,13 +48,21 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
-          path: report/*
+          path: coverage/*
+
+      - name: List coverage directory
+        run: |
+          ls -R coverage || echo "Coverage directory not found"
 
       - name: Output Coverage Summary
         id: coverage_summary
         run: |
-          echo "Coverage summary:"
-          cat coverage/coverage.txt || echo "No summary available"
+          if [ -f coverage/coverage-summary.txt ]; then
+            echo "Coverage summary:"
+            cat coverage/coverage-summary.txt
+          else
+            echo "No summary available"
+          fi
 
       - name: Comment Coverage Results
         uses: actions/github-script@v6
