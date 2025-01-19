@@ -10,7 +10,7 @@ on:
   workflow_dispatch: {}
 
 jobs:
-  prepare:
+  coverage:
     runs-on: ubuntu-latest
 
     steps:
@@ -25,62 +25,19 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-  run-coverage:
-    needs: prepare
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-
-      - name: Install Dependencies
-        run: yarn
-
-      - name: Install lcov-summary
-        run: npm install -g lcov-summary
-
       - name: Install lcov
         run: sudo apt-get update && sudo apt-get install -y lcov
 
       - name: Run Coverage
         run: npx hardhat coverage
 
-      - name: Upload coverage results
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-report
-          path: coverage/*
-
-      - name: Output Coverage Summary
-        id: coverage_summary
+      - name: View Coverage Summary
+        id: view_coverage
         run: |
-          if [ -f coverage/coverage-summary.txt ]; then
-            echo "Coverage summary:"
-            cat coverage/coverage-summary.txt
-          else
-            echo "No summary available"
-          fi
+          echo "Coverage Summary:"
+          lcov --list ./coverage/lcov.info
 
-      - name: Output Coverage Summary
+      - name: Output Coverage Table
         run: |
-          lcov-summary coverage/lcov.info
-
-      - name: Prune coverage report
-        run: |
-          lcov --remove ./coverage/lcov.info -o ./lcov.info.pruned 'scripts/*' --ignore-errors unused
-
-      - name: View Coverage (text here)
-        id: print_coverage
-        run: |
-          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
-          echo "comment_contents<<$EOF" >> $GITHUB_OUTPUT
-          lcov --list ./lcov.info.pruned --ignore-errors inconsistent >> $GITHUB_OUTPUT
-          echo "$EOF" >> $GITHUB_OUTPUT
-
-      - name: Log Coverage Report
-        run: echo "${{ steps.print_coverage.outputs.comment_contents }}"
+          echo "Coverage Table:"
+          lcov --list ./coverage/lcov.info | column -t
