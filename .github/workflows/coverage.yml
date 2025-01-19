@@ -54,12 +54,12 @@ jobs:
 
       - name: Display Coverage Summary from JSON
         run: |
-          node -e "
-          const fs = require('fs');
-          const coverage = JSON.parse(fs.readFileSync('./coverage/coverage-final.json', 'utf8'));
+          echo 'const fs = require("fs");
+          const coverage = JSON.parse(fs.readFileSync("./coverage/coverage-final.json", "utf8"));
           const totals = coverage.total;
-          console.log('Coverage Summary:');
-          console.log('Lines:', totals.lines.pct + '%');
-          console.log('Functions:', totals.functions.pct + '%');
-          console.log('Branches:', totals.branches.pct + '%');
-          console.log('Statements:', totals.statements.pct + '%');
+          console.log("Coverage Summary:");
+          console.log("Lines:", totals.lines.pct + "%");
+          console.log("Functions:", totals.functions.pct + "%");
+          console.log("Branches:", totals.branches.pct + "%");
+          console.log("Statements:", totals.statements.pct + "%");' > summary.js
+          node summary.js
