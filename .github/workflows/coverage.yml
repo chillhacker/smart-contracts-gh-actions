@@ -75,7 +75,8 @@ jobs:
           lcov-summary coverage/lcov.info
 
       - name: Prune coverage report
-        run: lcov --remove ./coverage/lcov.info -o ./lcov.info.pruned 'src/test/*' 'scripts/*' --ignore-errors inconsistent
+        run: |
+          lcov --remove ./coverage/lcov.info -o ./lcov.info.pruned 'scripts/*' --ignore-errors unused
 
       - name: View Coverage (text here)
         id: print_coverage
