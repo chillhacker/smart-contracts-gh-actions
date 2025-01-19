@@ -37,9 +37,8 @@ jobs:
                --remove ./coverage/lcov.info -o ./lcov.info.pruned 'scripts/*' --ignore-errors unused
 
       - name: View Coverage Summary
-        id: view_coverage
         run: |
-          echo "Coverage Summary:"
+          echo "Raw Coverage Summary:"
           lcov --rc branch_coverage=1 --list ./lcov.info.pruned
 
       - name: Output Coverage Table
@@ -52,3 +51,8 @@ jobs:
         with:
           name: coverage-report
           path: coverage/*
+
+      - name: Output Istanbul Coverage Summary
+        run: |
+          echo "Istanbul Coverage Summary:"
+          cat ./coverage/coverage-summary.txt || echo "No summary available"
