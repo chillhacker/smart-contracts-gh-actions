@@ -39,10 +39,10 @@ jobs:
           node-version: 16
 
       - name: Install Dependencies
-        run: npm install
+        run: yarn install
 
       - name: Install lcov-summary
-        run: npm install -g lcov-summary
+        run: yarn install -g lcov-summary
 
       - name: Install lcov
         run: sudo apt-get update && sudo apt-get install -y lcov
@@ -55,10 +55,6 @@ jobs:
         with:
           name: coverage-report
           path: coverage/*
-
-      - name: List coverage directory
-        run: |
-          ls -R coverage || echo "Coverage directory not found"
 
       - name: Output Coverage Summary
         id: coverage_summary
