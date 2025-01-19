@@ -44,6 +44,9 @@ jobs:
       - name: Install lcov-summary
         run: npm install -g lcov-summary
 
+      - name: Install lcov
+        run: sudo apt-get update && sudo apt-get install -y lcov
+
       - name: Run Coverage
         run: npx hardhat coverage
 
