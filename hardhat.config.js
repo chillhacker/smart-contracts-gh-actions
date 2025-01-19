@@ -5,6 +5,6 @@ module.exports = {
   solidity: "0.8.28",
   plugins: ["solidity-coverage"],
   coverage: {
-    reporter: ["text-summary", "html"],
+    reporter: ["text-summary", "lcov", "html"], // Add `text-summary` for console and file output
   },
 };
