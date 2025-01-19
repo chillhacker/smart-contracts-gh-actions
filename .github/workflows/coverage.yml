@@ -64,20 +64,20 @@ jobs:
             echo "No summary available"
           fi
 
-      - name: Comment Coverage Results
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const fs = require('fs');
-            const coveragePath = './coverage/coverage.txt';
-            let coverageSummary = 'Coverage report not available.';
-            if (fs.existsSync(coveragePath)) {
-              coverageSummary = fs.readFileSync(coveragePath, 'utf8');
-            }
-            const issueNumber = context.payload.pull_request ? context.payload.pull_request.number : context.issue.number;
-            github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: issueNumber,
-              body: `### Coverage Report\n\`\`\`\n${coverageSummary}\n\`\`\``
-            });
+      - name: Output Coverage Summary
+        run: |
+          lcov-summary coverage/lcov.info
+
+      - name: Prune coverage report
+        run: lcov --remove ./coverage/lcov.info -o ./lcov.info.pruned 'src/test/*' 'scripts/*' --ignore-errors inconsistent
+
+      - name: View Coverage (text here)
+        id: print_coverage
+        run: |
+          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+          echo "comment_contents<<$EOF" >> $GITHUB_OUTPUT
+          lcov --list ./lcov.info.pruned --ignore-errors inconsistent >> $GITHUB_OUTPUT
+          echo "$EOF" >> $GITHUB_OUTPUT
+
+      - name: Log Coverage Report
+        run: echo "${{ steps.print_coverage.outputs.comment_contents }}"
