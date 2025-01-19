@@ -39,10 +39,10 @@ jobs:
           node-version: 16
 
       - name: Install Dependencies
-        run: yarn install
+        run: yarn
 
       - name: Install lcov-summary
-        run: yarn install -g lcov-summary
+        run: npm install -g lcov-summary
 
       - name: Install lcov
         run: sudo apt-get update && sudo apt-get install -y lcov
